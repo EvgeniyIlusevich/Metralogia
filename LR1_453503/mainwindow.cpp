@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget* parent)
       m_totalOperators(0),
       m_totalOperands(0),
       m_uniqueOperators(0),
+
+
       m_uniqueOperands(0) {
     setupUi();
 }
@@ -180,9 +182,9 @@ void MainWindow::updateTables() {
 
 void MainWindow::updateMetricsDisplay() {
     int n1 = m_uniqueOperators;
-    int n2 = m_uniqueOperands;
+    int n2 = m_uniqueOperands + 4;
     int N1 = m_totalOperators;
-    int N2 = m_totalOperands;
+    int N2 = m_totalOperands + 4;
 
     int vocabulary = n1 + n2;
     int length = N1 + N2;
