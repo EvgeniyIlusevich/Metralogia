@@ -30,14 +30,12 @@ void MainWindow::setupUi() {
     setWindowTitle("Halstead Metrics for Kotlin");
     resize(900, 700);
 
-    // Центральный виджет
     QWidget* central = new QWidget(this);
     setCentralWidget(central);
 
-    // Главный вертикальный layout
     QVBoxLayout* mainLayout = new QVBoxLayout(central);
 
-    // Верхняя панель с кнопкой и именем файла
+    // Верхняя панель
     QHBoxLayout* topLayout = new QHBoxLayout();
     m_openButton = new QPushButton("Открыть файл...");
     m_fileLabel = new QLabel("Файл не выбран");
@@ -46,10 +44,9 @@ void MainWindow::setupUi() {
     topLayout->addWidget(m_fileLabel, 1);
     topLayout->addStretch();
 
-    // Горизонтальный сплит для таблиц и метрик
+    // Центральная часть: таблицы и метрики
     QHBoxLayout* centerLayout = new QHBoxLayout();
 
-    // Левая часть: таблицы операторов и операндов
     QVBoxLayout* tablesLayout = new QVBoxLayout();
 
     // Таблица операторов
@@ -71,7 +68,7 @@ void MainWindow::setupUi() {
     tablesLayout->addWidget(opGroup);
     tablesLayout->addWidget(operandGroup);
 
-    // Правая часть: метрики
+    // Группа метрик
     QGroupBox* metricsGroup = new QGroupBox("Метрики Холстеда");
     QGridLayout* metricsLayout = new QGridLayout(metricsGroup);
 
@@ -96,18 +93,16 @@ void MainWindow::setupUi() {
     centerLayout->addLayout(tablesLayout, 2);
     centerLayout->addWidget(metricsGroup, 1);
 
-    // Лог (опционально)
+    // Лог
     m_logText = new QTextEdit();
     m_logText->setMaximumHeight(150);
     m_logText->setReadOnly(true);
     m_logText->setPlaceholderText("Лог анализа...");
 
-    // Сборка главного layout
     mainLayout->addLayout(topLayout);
     mainLayout->addLayout(centerLayout, 1);
     mainLayout->addWidget(m_logText);
 
-    // Сигналы
     connect(m_openButton, &QPushButton::clicked, this, &MainWindow::onOpenFile);
 }
 
@@ -136,10 +131,8 @@ void MainWindow::analyzeFile(const QString& fileName) {
     m_logText->append("Файл загружен: " + fileName);
     m_logText->append("Размер: " + QString::number(code.size()) + " символов");
 
-    // Анализ
     HalsteadMetrics::analyze(code, m_operators, m_operands);
 
-    // Вычисление сумм
     m_totalOperators = 0;
     for (int cnt : m_operators)
         m_totalOperators += cnt;
@@ -151,7 +144,6 @@ void MainWindow::analyzeFile(const QString& fileName) {
     m_uniqueOperators = m_operators.size();
     m_uniqueOperands = m_operands.size();
 
-    // Обновление интерфейса
     updateTables();
     updateMetricsDisplay();
 
@@ -159,7 +151,6 @@ void MainWindow::analyzeFile(const QString& fileName) {
 }
 
 void MainWindow::updateTables() {
-    // Операторы
     m_operatorTable->setRowCount(m_operators.size());
     int row = 0;
     for (auto it = m_operators.constBegin(); it != m_operators.constEnd();
@@ -176,7 +167,6 @@ void MainWindow::updateTables() {
     }
     m_operatorTable->sortItems(1, Qt::DescendingOrder);
 
-    // Операнды
     m_operandTable->setRowCount(m_operands.size());
     row = 0;
     for (auto it = m_operands.constBegin(); it != m_operands.constEnd();
@@ -203,7 +193,7 @@ void MainWindow::updateMetricsDisplay() {
     int vocabulary = n1 + n2;
     int length = N1 + N2;
     double volume = length * log2(vocabulary);
-    double difficulty = (n1 / 2.0) * (N2 / (double)n2);
+    double difficulty = (n2 == 0) ? 0 : (n1 / 2.0) * (N2 / (double)n2);
     double effort = difficulty * volume;
     double time = effort / 18.0;
     double bugs = volume / 3000.0;

@@ -33,7 +33,7 @@ class MainWindow : public QMainWindow {
     QLabel* m_fileLabel;
     QTableWidget* m_operatorTable;
     QTableWidget* m_operandTable;
-    QLabel* m_metricsLabels[11];  // для 10 метрик
+    QLabel* m_metricsLabels[11];  // исправлено: 11 метрик
     QTextEdit* m_logText;
 
     // Данные анализа

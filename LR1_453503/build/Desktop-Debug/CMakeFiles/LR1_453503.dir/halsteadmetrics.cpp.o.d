@@ -311,4 +311,6 @@ CMakeFiles/LR1_453503.dir/halsteadmetrics.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qobject_impl.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qbindingstorage.h \
  /usr/include/c++/13/chrono /usr/include/c++/13/bits/chrono.h \
- /usr/include/c++/13/ratio /usr/include/c++/13/ctime
+ /usr/include/c++/13/ratio /usr/include/c++/13/ctime \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/QVector \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qvector.h

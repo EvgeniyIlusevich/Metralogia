@@ -13,6 +13,7 @@ class HalsteadMetrics {
    private:
     static QString removeComments(const QString& code);
     static QSet<QString> keywords;
+    static QSet<QString> booleanLiterals;  // true, false, null
 };
 
 #endif	// HALSTEADMETRICS_H
