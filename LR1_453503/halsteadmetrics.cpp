@@ -1,3 +1,4 @@
+// halsteadmetrics.cpp — обновлённый (учитывает import/package и квалифицированные имена)
 #include "halsteadmetrics.h"
 #include <QDebug>
 #include <QRegularExpression>
@@ -5,10 +6,9 @@
 
 /*
   Исправленный файл halsteadmetrics.cpp
-  - устранены пересечения совпадений путём пометки занятых диапазонов;
-  - исправлено экранирование строк в регулярных выражениях (нет некорректных raw-литералов);
-  - вызовы функций учитываются как операторы вида "call:<name>", чтобы не дублировать имя как операнд;
-  - порядок поиска: сначала операторы, затем литералы (строки/символы/числа/логика), затем идентификаторы.
+  - исключаем части import/package из подсчёта операндов;
+  - квалифицированные имена (a.b.c) считаются единым операндом;
+  - пометка занятых диапазонов для предотвращения двойного учёта.
 */
 
 QSet<QString> HalsteadMetrics::keywords = {
@@ -152,6 +152,22 @@ void HalsteadMetrics::analyze(const QString& code,
         }
     }
 
+    // --- Обозначим декларации import/package как занятые диапазоны,
+    // чтобы их части (kotlin, math и т.п.) не считались операндами ---
+    QRegularExpression importPkgRegex(
+        "\\b(?:import|package)\\s+[A-Za-z_]\\w*(?:\\.[A-Za-z_]\\w*)*(?:\\s*;)"
+        "?");
+    QRegularExpressionMatchIterator ipIt =
+        importPkgRegex.globalMatch(cleanedCode);
+    while (ipIt.hasNext()) {
+        QRegularExpressionMatch match = ipIt.next();
+        int start = match.capturedStart();
+        int len = match.capturedLength();
+        if (len <= 0)
+            continue;
+        addRange(occupiedOpRanges, start, len);
+    }
+
     // ---- Операнды ----
     QVector<QPair<int, int>>
         occupiedOperandRanges;	// диапазоны уже найденных операндов (литералы и т.д.)
@@ -227,7 +243,29 @@ void HalsteadMetrics::analyze(const QString& code,
         }
     }
 
-    // 5. Идентификаторы (слова) — исключая ключевые слова и уже занятые диапазоны
+    // 5. Квалифицированные имена (a.b.c) — считаем их единым операндом
+    QRegularExpression qualifiedRegex(
+        "\\b[A-Za-z_]\\w*(?:\\.[A-Za-z_]\\w*)+\\b");
+    QRegularExpressionMatchIterator qIt =
+        qualifiedRegex.globalMatch(cleanedCode);
+    while (qIt.hasNext()) {
+        QRegularExpressionMatch match = qIt.next();
+        int start = match.capturedStart();
+        int len = match.capturedLength();
+        if (len <= 0)
+            continue;
+        if (overlapsAny(occupiedOpRanges, start, len) ||
+            overlapsAny(occupiedOperandRanges, start, len))
+            continue;
+        QString qname = match.captured();
+        // Не учитываем ключевые слова (на всякий)
+        if (keywords.contains(qname))
+            continue;
+        operands[qname] = operands.value(qname, 0) + 1;
+        addRange(occupiedOperandRanges, start, len);
+    }
+
+    // 6. Идентификаторы (слова) — исключая ключевые слова и уже занятые диапазоны
     QRegularExpression idRegex("\\b([A-Za-z_]\\w*)\\b");
     QRegularExpressionMatchIterator idIt = idRegex.globalMatch(cleanedCode);
     while (idIt.hasNext()) {
