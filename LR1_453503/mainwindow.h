@@ -28,15 +28,13 @@ class MainWindow : public QMainWindow {
     void updateMetricsDisplay();
     void updateTables();
 
-    // Элементы интерфейса
     QPushButton* m_openButton;
     QLabel* m_fileLabel;
     QTableWidget* m_operatorTable;
     QTableWidget* m_operandTable;
-    QLabel* m_metricsLabels[11];  // исправлено: 11 метрик
+    QLabel* m_metricsLabels[11];
     QTextEdit* m_logText;
 
-    // Данные анализа
     QMap<QString, int> m_operators;
     QMap<QString, int> m_operands;
     int m_totalOperators;

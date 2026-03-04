@@ -35,7 +35,6 @@ void MainWindow::setupUi() {
 
     QVBoxLayout* mainLayout = new QVBoxLayout(central);
 
-    // Верхняя панель
     QHBoxLayout* topLayout = new QHBoxLayout();
     m_openButton = new QPushButton("Открыть файл...");
     m_fileLabel = new QLabel("Файл не выбран");
@@ -44,12 +43,10 @@ void MainWindow::setupUi() {
     topLayout->addWidget(m_fileLabel, 1);
     topLayout->addStretch();
 
-    // Центральная часть: таблицы и метрики
     QHBoxLayout* centerLayout = new QHBoxLayout();
 
     QVBoxLayout* tablesLayout = new QVBoxLayout();
 
-    // Таблица операторов
     QGroupBox* opGroup = new QGroupBox("Операторы");
     m_operatorTable = new QTableWidget(0, 2);
     m_operatorTable->setHorizontalHeaderLabels({"Оператор", "Частота"});
@@ -57,7 +54,6 @@ void MainWindow::setupUi() {
     QVBoxLayout* opLayout = new QVBoxLayout(opGroup);
     opLayout->addWidget(m_operatorTable);
 
-    // Таблица операндов
     QGroupBox* operandGroup = new QGroupBox("Операнды");
     m_operandTable = new QTableWidget(0, 2);
     m_operandTable->setHorizontalHeaderLabels({"Операнд", "Частота"});
@@ -68,7 +64,6 @@ void MainWindow::setupUi() {
     tablesLayout->addWidget(opGroup);
     tablesLayout->addWidget(operandGroup);
 
-    // Группа метрик
     QGroupBox* metricsGroup = new QGroupBox("Метрики Холстеда");
     QGridLayout* metricsLayout = new QGridLayout(metricsGroup);
 
@@ -93,7 +88,6 @@ void MainWindow::setupUi() {
     centerLayout->addLayout(tablesLayout, 2);
     centerLayout->addWidget(metricsGroup, 1);
 
-    // Лог
     m_logText = new QTextEdit();
     m_logText->setMaximumHeight(150);
     m_logText->setReadOnly(true);
